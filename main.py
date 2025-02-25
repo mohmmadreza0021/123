@@ -68,5 +68,5 @@ async def main():
             await asyncio.sleep(5)  # ۵ ثانیه صبر کن و دوباره اجرا کن
 
 # اجرای اسکریپت اصلی
-if name == "__main__":
+if __name__ == "__main__":
     bot.run()
