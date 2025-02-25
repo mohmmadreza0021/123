@@ -69,4 +69,4 @@ async def main():
 
 # اجرای اسکریپت اصلی
 if name == "__main__":
-    asyncio.run(main())
+    bot.run()
