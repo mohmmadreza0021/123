@@ -22,17 +22,30 @@ async def is_member(user_id):
         return False
 
 # دریافت مدیا و ایجاد لینک اختصاصی
-@bot.on_message(filters.private & filters.media)
-async def send_media(client, message):
-    if message.video or message.photo or message.document:
-        file_id = (
-            message.video.file_id if message.video else
-            message.photo.file_id if message.photo else
-            message.document.file_id
-        )
+@bot.on_message(filters.command("start") & filters.private)
+async def get_media(client, message):
+    if len(message.command) > 1:
+        file_id = message.command[1]  # گرفتن file_id از دستور start
+        user_id = message.from_user.id
 
-        media_link = f"https://t.me/{BOT_USERNAME}?start={file_id}"
-        await message.reply_text(f"🔗 **لینک فایل شما:**\n{media_link}")
+        # بررسی عضویت کاربر در کانال
+        if await is_member(user_id):  
+            try:
+                # ارسال مدیا با استفاده از file_id
+                await bot.send_cached_media(user_id, file_id)  
+            except Exception as e:
+                await message.reply_text(f"❌ خطا در ارسال فایل: {e}")
+        else:
+            await message.reply_text(
+                "❌ **شما هنوز عضو کانال نیستید!**\nبرای دریافت فایل، ابتدا عضو شوید.",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("📢 عضویت در کانال", url=f"https://t.me/{CHANNEL_USERNAME}")]
+                ])
+            )
+    else:
+        # اگر لینکی وارد نشد
+        await message.reply_text("🎉 به ربات خوش آمدید! لطفاً لینک مدیا رو وارد کن تا دریافتش کنی.")
+
 
 # دریافت مدیا از لینک و بررسی عضویت
 @bot.on_message(filters.command("start") & filters.private)
